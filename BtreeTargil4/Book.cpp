@@ -9,19 +9,30 @@ Book::Book(int catalog, int _shelf)
 
 bool Book::borrowBook(int wantedCatalogNumber)
 {
-
-	// TODO: fix. Use the following lines to print the output according to the relevant case
-	// cout << "Error! The book " << catalogNumber << " is already borrowed!" << endl;
-	// cout << "Successfully found the book " << catalogNumber << " on shelf " << shelf << " and borrowed it" << endl;
-	return true;
+	if (!available)
+	{
+		cout << "Error! The book " << catalogNumber << " is already borrowed!" << endl;
+		return false;
+	}
+	else
+	{
+		cout << "Successfully found the book " << catalogNumber << " on shelf " << shelf << " and borrowed it" << endl;
+		return true;
+	}
 }
 
 bool Book::returnBook()
 {
-	// TODO: fix. Use the following lines to print the output according to the relevant case
-	// cout << "Error! The book " << catalogNumber << " is not borrowed!" << endl;
-	// cout << "Successfully returned the book " << catalogNumber << " to shelf " << shelf << endl;
-	return true;
+	if (available)
+	{
+		cout << "Error! The book " << catalogNumber << " is not borrowed!" << endl;
+		return false;
+	}
+	else
+	{
+		cout << "Successfully returned the book " << catalogNumber << " to shelf " << shelf << endl;
+		return true;
+	}
 }
 
 ostream& operator<<(ostream& os, Book b)
