@@ -2,11 +2,14 @@
 
 Book::Book(int catalog, int _shelf)
 {
-	// TODO: fix
+	catalogNumber = catalog;
+	shelf = _shelf;
+	available = true;
 }
 
-bool Book::borrowBook()
+bool Book::borrowBook(int wantedCatalogNumber)
 {
+
 	// TODO: fix. Use the following lines to print the output according to the relevant case
 	// cout << "Error! The book " << catalogNumber << " is already borrowed!" << endl;
 	// cout << "Successfully found the book " << catalogNumber << " on shelf " << shelf << " and borrowed it" << endl;

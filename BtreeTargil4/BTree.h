@@ -45,31 +45,53 @@ public:
 template<class T>
 BTree<T>::BNode::BNode(int _m)
 {
-	// TODO: fix
+	m = _m;
+	records = new T[_m];
+	sons = new BNode * [_m + 1];
+	parent = new BNode;
+	numOfRecords = 0;
+	numOfSons = 0;
 }
 
 template<class T>
 BTree<T>::BNode::~BNode()
 {
-	// TODO: fix
+	delete[] records;
+	for (int i = 0; i < m; ++i) {
+		delete sons[i]; // Assuming each element of sons was dynamically allocated
+	}
+	delete[] sons; // Delete the sons array
+	delete parent;
 }
 
 template<class T>
 bool BTree<T>::BNode::isLeaf()
 {
-	// TODO: fix
+	if (numOfSons == 0)
+		return true;
+	return false;
 }
 
 template<class T>
 void BTree<T>::BNode::insert(T record)
 {
-	// TODO: fix
+	records[numOfRecords + 1] = record;
+	numOfRecords++;
 }
 
 template<class T>
 void BTree<T>::BNode::remove(T record)
 {
-	// TODO: fix
+	for (int i = 0; i < numOfRecords; i++)
+	{
+		if (records[i] == record)
+		{
+			for (int j = i; j < numOfRecords-1; j++)//get all the continue of the array one place earlier and crush the record we want to delete
+			{
+				records[j] = records[j + 1];
+			}
+		}
+	}
 }
 
 template<class T>
@@ -80,7 +102,8 @@ void BTree<T>::BNode::printKeys()
 		cout << records[i].getKey() << ",";
 	cout << records[numOfRecords - 1].getKey() << ')' << endl;
 }
-
+//-----------------------------------------------------------------------------------------------------
+//start of BTree:
 
 template<class T>
 BTree<T>::BTree(int degree) :m(degree), root(nullptr)
@@ -89,7 +112,10 @@ BTree<T>::BTree(int degree) :m(degree), root(nullptr)
 template<class T>
 BTree<T>::~BTree()
 {
-	// TODO: fix
+	for (int i = 0; i < m; i++)
+	{
+		
+	}
 }
 template<class T>
 void BTree<T>::inorder()
@@ -107,7 +133,13 @@ void BTree<T>::insert(T record)
 template<class T>
 void BTree<T>::clear(BNode* current)
 {
-	// TODO: fix
+	if (current)
+	{
+		for (int i = 0; i < m; i++)
+		{
+
+		}
+	}
 }
 template<class T>
 void BTree<T>::inorder(BNode* current)
