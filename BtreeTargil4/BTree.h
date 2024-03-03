@@ -86,9 +86,9 @@ void BTree<T>::BNode::insertKey(T record)
 		{
 			stop = true;
 			rightPlace = i;
-			for (int j = i; j < numOfRecords; j++)//get all the continue of the array one place earlier and crush the record we want to delete
+			for (int j = numOfRecords; j > i; j--)//get all the continue of the array one place earlier and crush the record we want to delete
 			{
-				records[j + 1] = records[j];
+				records[j] = records[j-1];
 			}
 		}
 	}
