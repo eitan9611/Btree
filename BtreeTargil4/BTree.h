@@ -210,7 +210,6 @@ void BTree<T>::split(BNode* fullNode)
 
 	//B. get the middle value in full node to the parent:
 	fullNode->parent->insertKey((fullNode->records)[m / 2]);//get him into the father 
-	(fullNode->records)[m / 2] = 0;
 	fullNode->parent->numOfRecords++;
 	fullNode->numOfRecords--;
 
@@ -252,8 +251,20 @@ void BTree<T>::split(BNode* fullNode)
 template<class T>
 T* BTree<T>::search(BNode* current, int key, int& counter)
 {
-	// TODO: fix
-	return nullptr;
+	counter++;
+	for(int i = 0;  i< current->numOfRecords; i++)
+	{
+		if (key < (current->records)[i])
+		{
+			return search(current->records)[i],key,counter);
+		}
+		if (key == (current->records)[i])
+		{
+			return current->records)[i];
+		}
+	}
+	//if key is bigger from all the current record =>go to the right son
+	return search(current->records)[current->numOfSons],key,counter);
 }
 
 template<class T>
