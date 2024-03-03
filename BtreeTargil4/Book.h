@@ -12,7 +12,7 @@ public:
 	Book(int catalog = 0, int _self = 0);
 	bool borrowBook(int wantedCatalogNumber);///////
 	bool returnBook();////////////
-	bool operator<(Book b) { if (catalogNumber < b.catalogNumber)return true; else return false; } 
+	bool operator<(Book b) { return (catalogNumber < b.catalogNumber); } 
 	bool operator>(Book b) { if (catalogNumber > b.catalogNumber)return true; else return false; } 
 	bool operator<=(Book b) { if (catalogNumber <= b.catalogNumber)return true; else return false; } 
 	bool operator==(Book b) { if (catalogNumber == b.catalogNumber)return true; else return false; } 

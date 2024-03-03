@@ -135,7 +135,7 @@ BTree<T>::~BTree()
 template<class T>
 void BTree<T>::inorder()
 {
-	// TODO: fix
+	inorder(root);
 }
 
 template<class T>
@@ -163,7 +163,19 @@ void BTree<T>::clear(BNode* current)
 template<class T>
 void BTree<T>::inorder(BNode* current)
 {
-	// TODO: fix
+	int i;
+	if (current != nullptr)
+	{
+		for (i = 0; i < current->numOfRecords; i++)
+		{
+			if( !current->isLeaf())
+				inorder(current->sons[i]); //ran over the left node of of the current record 
+
+			current->printKeys();// visit the node itself
+		}
+		if (!current->isLeaf())
+			inorder(current->sons[i]); //if isnt leaf: numOfSons = numOfRecord + 1 so we need to ran over this Node too.
+	}
 }
 
 template<class T>
