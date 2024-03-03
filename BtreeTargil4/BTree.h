@@ -169,8 +169,23 @@ void BTree<T>::inorder(BNode* current)
 template<class T>
 typename BTree<T>::BNode* BTree<T>::findAddNode(BNode* current, T record)
 {
-	// TODO: fix
-	return nullptr;
+	if (root == nullptr)//empty tree
+		return nullptr;
+	if ((current->numOfSons) == 0 && (current->numOfRecords) < m)//our current isn't full => add to him
+		return current;
+	for (size_t i = 0; i < length; i++)
+	{
+		for (int i = 0; i < current->numOfRecords; i++)
+		{
+			//if you meet a deleted place-keep go
+			//else  if you meet place with record and his record isn't a sign for deleted place [0] => see if you need to go left or right according to his value
+			if (current->records[i] < record && current->records[i] != 0)
+
+		}
+
+	}
+	
+
 }
 
 template <class T>
@@ -186,6 +201,7 @@ void BTree<T>::split(BNode* fullNode)
 
 	//fill the new node with appropriate values:
 	BNode* newNode(m);	
+	newNode->parent = fullNode->parent;
 	for (int i = ((fullNode->numOfRecords) / 2) + 1; i < fullNode->numOfRecords; i++)
 	{
 		newNode->records->insertKey((fullNode->records)[i]);
