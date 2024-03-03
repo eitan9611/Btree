@@ -19,7 +19,7 @@ private:
 		BNode(int _m);
 		~BNode();
 		bool isLeaf();
-		void insert(T record);
+		void insertKey(T record);
 		void remove(T record);
 		void printKeys();
 	};
@@ -57,11 +57,14 @@ template<class T>
 BTree<T>::BNode::~BNode()
 {
 	delete[] records;
+	records = nullptr;
 	for (int i = 0; i < m; ++i) {
 		delete sons[i]; // Assuming each element of sons was dynamically allocated
 	}
 	delete[] sons; // Delete the sons array
+	sons = nullptr;
 	delete parent;
+	parent = null;
 }
 
 template<class T>
@@ -73,9 +76,24 @@ bool BTree<T>::BNode::isLeaf()
 }
 
 template<class T>
-void BTree<T>::BNode::insert(T record)
+void BTree<T>::BNode::insertKey(T record)
 {
-	records[numOfRecords + 1] = record;
+
+	bool stop = false;
+	int rightPlace = 0;
+	for (int i = 0; i < numOfRecords && stop = false; i++)
+	{
+		if (records[i] > record)//found the right place to get this record in 
+		{
+			stop = true;
+			rightPlace = i;
+			for (int j = i; j < numOfRecords; j++)//get all the continue of the array one place earlier and crush the record we want to delete
+			{
+				records[j+1] = records[j];
+			}	
+		}
+	}
+	records[rightPlace] = record;
 	numOfRecords++;
 }
 
@@ -112,10 +130,7 @@ BTree<T>::BTree(int degree) :m(degree), root(nullptr)
 template<class T>
 BTree<T>::~BTree()
 {
-	for (int i = 0; i < m; i++)
-	{
-		
-	}
+	clear(root);
 }
 template<class T>
 void BTree<T>::inorder()
@@ -135,10 +150,14 @@ void BTree<T>::clear(BNode* current)
 {
 	if (current)
 	{
-		for (int i = 0; i < m; i++)
+		delete[]records;//deleting all records-directly
+		for (int i = 0; i < current->numOfSons; i++)//delete sons
 		{
-
+			clear(sons[i]);
 		}
+		delete[]sons;
+		delete current;
+		current = null;
 	}
 }
 template<class T>
@@ -162,14 +181,66 @@ void BTree<T>::inorder(BNode* current)
 template<class T>
 typename BTree<T>::BNode* BTree<T>::findAddNode(BNode* current, T record)
 {
-	// TODO: fix
-	return nullptr;
+	if (root == nullptr)//empty tree
+		return nullptr;
+	if ((current->numOfSons) == 0 && (current->numOfRecords) < m)//our current isn't full => add to him
+		return current;
+	for (size_t i = 0; i < length; i++)
+	{
+		for (int i = 0; i < current->numOfRecords; i++)
+		{
+			//if you meet a deleted place-keep go
+			//else  if you meet place with record and his record isn't a sign for deleted place [0] => see if you need to go left or right according to his value
+			if (current->records[i] < record && current->records[i] != 0)
+
+		}
+
+	}
+	
+
 }
 
 template <class T>
-void BTree<T>::split(BNode* current)
+void BTree<T>::split(BNode* fullNode)
 {
-	// TODO: fix
+	//need to sort the fullNode.  ? here or in the insert? ? 
+
+	//get the middle value in full node to the parent:
+	fullNode->parent->insertKey((fullNode->records)[m / 2]);//get him into the father 
+	(fullNode->records)[m / 2] = 0;
+	fullNode->parent->numOfRecords++;
+	fullNode->numOfRecords--;
+
+	//fill the new node with appropriate values:
+	BNode* newNode(m);	
+	newNode->parent = fullNode->parent;
+	for (int i = ((fullNode->numOfRecords) / 2) + 1; i < fullNode->numOfRecords; i++)
+	{
+		newNode->records->insertKey((fullNode->records)[i]);
+		(fullNode->records)[i] = 0;
+		newNode->numOfRecords++;
+		fullNode->numOfRecords--;
+	}
+
+	//get newNode in his correct place in the sons array-> always the newNode will be one place after the fullNode:
+	int numberOfSonsParent = fullNode->parent->numOfSons;
+	int placeOfFullNode = 0;
+	for (int  i = 0; i < numberOfSonsParent; i++)
+	{
+		if (fullNode->parent->sons[i] == fullNode)
+		{
+			placeOfFullNode = i;
+		}
+	}
+	for (int i = placeOfFullNode+1; i < numberOfSonsParent-1; i++)//move all BNodes after fullNode one place forward.
+	{
+		fullNode->parent->sons[i + 1] = fullNode->parent->sons[i];
+	}
+	fullNode->parent->sons[i + 1] = newNode;
+	fullNode->parent->numOfSons++;
+	//reqursive check for the father send.
+	if (fullNode->parent->numOfSons == m)
+		split(fullNode->parent);
 }
 
 
