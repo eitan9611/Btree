@@ -89,8 +89,8 @@ void BTree<T>::BNode::insertKey(T record)
 			rightPlace = i;
 			for (int j = i; j < numOfRecords; j++)//get all the continue of the array one place earlier and crush the record we want to delete
 			{
-				records[j+1] = records[j];
-			}	
+				records[j + 1] = records[j];
+			}
 		}
 	}
 	records[rightPlace] = record;
@@ -104,7 +104,7 @@ void BTree<T>::BNode::remove(T record)
 	{
 		if (records[i] == record)
 		{
-			for (int j = i; j < numOfRecords-1; j++)//get all the continue of the array one place earlier and crush the record we want to delete
+			for (int j = i; j < numOfRecords - 1; j++)//get all the continue of the array one place earlier and crush the record we want to delete
 			{
 				records[j] = records[j + 1];
 			}
@@ -168,7 +168,7 @@ void BTree<T>::inorder(BNode* current)
 	{
 		for (i = 0; i < current->numOfRecords; i++)
 		{
-			if( !current->isLeaf())
+			if (!current->isLeaf())
 				inorder(current->sons[i]); //ran over the left node of of the current record 
 
 			current->printKeys();// visit the node itself
@@ -183,21 +183,22 @@ typename BTree<T>::BNode* BTree<T>::findAddNode(BNode* current, T record)
 {
 	if (root == nullptr)//empty tree
 		return nullptr;
-	if ((current->numOfSons) == 0 && (current->numOfRecords) < m)//our current isn't full => add to him
-		return current;
-	for (size_t i = 0; i < length; i++)
-	{
-		for (int i = 0; i < current->numOfRecords; i++)
-		{
-			//if you meet a deleted place-keep go
-			//else  if you meet place with record and his record isn't a sign for deleted place [0] => see if you need to go left or right according to his value
-			if (current->records[i] < record && current->records[i] != 0)
 
-		}
+	if (current->isLeaf())//our current isn't full => add to him
+		return current;
+
+	else if (record < current->records[0]) //if the current node has atleast one record, and the new record is smaller the left record
+		return findAddNode(current->sons[0], record);
+
+	for (int i = 1; i < current->numOfRecords; i++)
+	{
+		if (record > current->records[i - 1] && record < current->records[i])
+			return findAddNode(current->sons[i], record);
 
 	}
-	
 
+	//if we finished the loop and didn't find the right node return the right node.
+	return findAddNode(current->sons[i], record);
 }
 
 template <class T>
@@ -212,7 +213,7 @@ void BTree<T>::split(BNode* fullNode)
 	fullNode->numOfRecords--;
 
 	//fill the new node with appropriate values:
-	BNode* newNode(m);	
+	BNode* newNode(m);
 	newNode->parent = fullNode->parent;
 	for (int i = ((fullNode->numOfRecords) / 2) + 1; i < fullNode->numOfRecords; i++)
 	{
@@ -225,14 +226,14 @@ void BTree<T>::split(BNode* fullNode)
 	//get newNode in his correct place in the sons array-> always the newNode will be one place after the fullNode:
 	int numberOfSonsParent = fullNode->parent->numOfSons;
 	int placeOfFullNode = 0;
-	for (int  i = 0; i < numberOfSonsParent; i++)
+	for (int i = 0; i < numberOfSonsParent; i++)
 	{
 		if (fullNode->parent->sons[i] == fullNode)
 		{
 			placeOfFullNode = i;
 		}
 	}
-	for (int i = placeOfFullNode+1; i < numberOfSonsParent-1; i++)//move all BNodes after fullNode one place forward.
+	for (int i = placeOfFullNode + 1; i < numberOfSonsParent - 1; i++)//move all BNodes after fullNode one place forward.
 	{
 		fullNode->parent->sons[i + 1] = fullNode->parent->sons[i];
 	}
