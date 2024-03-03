@@ -48,7 +48,7 @@ BTree<T>::BNode::BNode(int _m)
 	m = _m;
 	records = new T[_m];
 	sons = new BNode * [_m + 1];
-	parent = new BNode;
+	parent = nullptr;
 	numOfRecords = 0;
 	numOfSons = 0;
 }
@@ -78,10 +78,9 @@ bool BTree<T>::BNode::isLeaf()
 template<class T>
 void BTree<T>::BNode::insertKey(T record)
 {
-
 	bool stop = false;
 	int rightPlace = 0;
-	for (int i = 0; i < numOfRecords && stop = false; i++)
+	for (int i = 0; i < numOfRecords && stop == false; i++)
 	{
 		if (records[i] > record)//found the right place to get this record in 
 		{
@@ -141,8 +140,15 @@ void BTree<T>::inorder()
 template<class T>
 void BTree<T>::insert(T record)
 {
-	// TODO: fix
+	if (root == nullptr)
+		root = new BNode(m);
+
+	BNode* x = findAddNode(root, record);
+	x->insertKey(record);
+	if (x->numOfRecords == m)
+		split(x);
 }
+
 
 //private recursive help fuctions
 template<class T>
@@ -218,11 +224,11 @@ void BTree<T>::split(BNode* fullNode)
 	fullNode->numOfRecords--;
 
 	//C. fill the new node with appropriate values:
-	BNode* newNode(m);	
+	BNode* newNode = new BNode(m);	
 	newNode->parent = fullNode->parent;
 	for (i = ((fullNode->numOfRecords) / 2) + 1; i < fullNode->numOfRecords; i++)
 	{
-		newNode->records->insertKey((fullNode->records)[i]);
+		newNode->insertKey((fullNode->records)[i]);
 		(fullNode->records)[i] = 0;
 		newNode->numOfRecords++;
 		fullNode->numOfRecords--;
@@ -255,26 +261,28 @@ void BTree<T>::split(BNode* fullNode)
 template<class T>
 T* BTree<T>::search(BNode* current, int key, int& counter)
 {
+	int i;
 	counter++;
-	for(int i = 0;  i< current->numOfRecords; i++)
+	for(i = 0;  i< current->numOfRecords; i++)
 	{
-		if (key < (current->records)[i])
+		if (key < (current->records[i]).getKey())
 		{
-			return search(current->records)[i],key,counter);
+			return search(current->sons[i],key,counter);
 		}
-		if (key == (current->records)[i])
+		if (key == (current->records[i]).getKey())
 		{
-			return current->records)[i];
+			return &(current->records[i]); ///// maybe need to be current->records
 		}
 	}
 	//if key is bigger from all the current record =>go to the right son
-	return search(current->records)[current->numOfSons],key,counter);
+	return search(current->sons[i],key,counter);
 }
 
 template<class T>
-T* BTree<T>::search(int key) {
+T* BTree<T>::search(int key) 
+{
 	int counter = 0;
-	// TODO: fix
+	T* found = search(root, key, counter);
 	cout << "The search involved scanning " << counter << " nodes" << endl;
-	return nullptr;
+	return found;
 }
