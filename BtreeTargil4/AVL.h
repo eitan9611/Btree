@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "LibraryDataStructure.h"
 using namespace std;
 
 template <class T>

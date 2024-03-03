@@ -64,7 +64,7 @@ BTree<T>::BNode::~BNode()
 	delete[] sons; // Delete the sons array
 	sons = nullptr;
 	delete parent;
-	parent = null;
+	parent = nullptr;
 }
 
 template<class T>
@@ -150,14 +150,14 @@ void BTree<T>::clear(BNode* current)
 {
 	if (current)
 	{
-		delete[]records;//deleting all records-directly
+		delete[] current->records;//deleting all records-directly
 		for (int i = 0; i < current->numOfSons; i++)//delete sons
 		{
-			clear(sons[i]);
+			clear(current->sons[i]);
 		}
-		delete[]sons;
+		delete[] current->sons;
 		delete current;
-		current = null;
+		current = nullptr;
 	}
 }
 template<class T>
@@ -181,6 +181,7 @@ void BTree<T>::inorder(BNode* current)
 template<class T>
 typename BTree<T>::BNode* BTree<T>::findAddNode(BNode* current, T record)
 {
+	int i;
 	if (root == nullptr)//empty tree
 		return nullptr;
 
@@ -190,7 +191,7 @@ typename BTree<T>::BNode* BTree<T>::findAddNode(BNode* current, T record)
 	else if (record < current->records[0]) //if the current node has atleast one record, and the new record is smaller the left record
 		return findAddNode(current->sons[0], record);
 
-	for (int i = 1; i < current->numOfRecords; i++)
+	for (i = 1; i < current->numOfRecords; i++)
 	{
 		if (record > current->records[i - 1] && record < current->records[i])
 			return findAddNode(current->sons[i], record);
@@ -204,6 +205,8 @@ typename BTree<T>::BNode* BTree<T>::findAddNode(BNode* current, T record)
 template <class T>
 void BTree<T>::split(BNode* fullNode)
 {
+	int i;
+
 	//WAY OF WORK:
 	//A. first m/2 => stays in the fullNode
 	//B. middle => goes to the parent
@@ -218,7 +221,7 @@ void BTree<T>::split(BNode* fullNode)
 	//C. fill the new node with appropriate values:
 	BNode* newNode(m);	
 	newNode->parent = fullNode->parent;
-	for (int i = ((fullNode->numOfRecords) / 2) + 1; i < fullNode->numOfRecords; i++)
+	for (i = ((fullNode->numOfRecords) / 2) + 1; i < fullNode->numOfRecords; i++)
 	{
 		newNode->records->insertKey((fullNode->records)[i]);
 		(fullNode->records)[i] = 0;
@@ -228,14 +231,14 @@ void BTree<T>::split(BNode* fullNode)
 	//get newNode in his correct place in the sons array-> always the newNode will be one place after the fullNode:
 	int numberOfSonsParent = fullNode->parent->numOfSons;
 	int placeOfFullNode = 0;
-	for (int i = 0; i < numberOfSonsParent; i++)
+	for (i = 0; i < numberOfSonsParent; i++)
 	{
 		if (fullNode->parent->sons[i] == fullNode)
 		{
 			placeOfFullNode = i;
 		}
 	}
-	for (int i = placeOfFullNode + 1; i < numberOfSonsParent - 1; i++)//move all BNodes after fullNode one place forward.
+	for (i = placeOfFullNode + 1; i < numberOfSonsParent - 1; i++)//move all BNodes after fullNode one place forward.
 	{
 		fullNode->parent->sons[i + 1] = fullNode->parent->sons[i];
 	}
