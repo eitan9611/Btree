@@ -191,15 +191,18 @@ typename BTree<T>::BNode* BTree<T>::findAddNode(BNode* current, T record)
 template <class T>
 void BTree<T>::split(BNode* fullNode)
 {
-	//need to sort the fullNode.  ? here or in the insert? ? 
+	//WAY OF WORK:
+	//A. first m/2 => stays in the fullNode
+	//B. middle => goes to the parent
+	//C. last m/2 => creates new node and send them to him. this new node always will be one place after the son fullNode. 
 
-	//get the middle value in full node to the parent:
+	//B. get the middle value in full node to the parent:
 	fullNode->parent->insertKey((fullNode->records)[m / 2]);//get him into the father 
 	(fullNode->records)[m / 2] = 0;
 	fullNode->parent->numOfRecords++;
 	fullNode->numOfRecords--;
 
-	//fill the new node with appropriate values:
+	//C. fill the new node with appropriate values:
 	BNode* newNode(m);	
 	newNode->parent = fullNode->parent;
 	for (int i = ((fullNode->numOfRecords) / 2) + 1; i < fullNode->numOfRecords; i++)
@@ -209,7 +212,6 @@ void BTree<T>::split(BNode* fullNode)
 		newNode->numOfRecords++;
 		fullNode->numOfRecords--;
 	}
-
 	//get newNode in his correct place in the sons array-> always the newNode will be one place after the fullNode:
 	int numberOfSonsParent = fullNode->parent->numOfSons;
 	int placeOfFullNode = 0;
@@ -226,6 +228,8 @@ void BTree<T>::split(BNode* fullNode)
 	}
 	fullNode->parent->sons[i + 1] = newNode;
 	fullNode->parent->numOfSons++;
+
+
 	//reqursive check for the father send.
 	if (fullNode->parent->numOfSons == m)
 		split(fullNode->parent);
