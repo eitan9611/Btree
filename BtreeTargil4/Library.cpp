@@ -24,7 +24,7 @@ bool Library::borrowBook(int catalogNumber) {
         return false;
     }
 
-    return book->borrowBook();
+    return book->borrowBook(catalogNumber);
 }
 
 bool Library::returnBook(int catalogNumber) {

@@ -1,6 +1,7 @@
 #pragma once
 template<class T>
-class LibraryDataStructure {
+class LibraryDataStructure
+{
 public:
     virtual void inorder() = 0;
     virtual void insert(T t) = 0;
