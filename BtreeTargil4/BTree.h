@@ -56,15 +56,13 @@ BTree<T>::BNode::BNode(int _m)
 template<class T>
 BTree<T>::BNode::~BNode()
 {
-	delete[] records;
+	if(records)
+		delete[] records;
 	records = nullptr;
-	for (int i = 0; i < m; ++i) {
-		delete sons[i]; // Assuming each element of sons was dynamically allocated
-	}
-	delete[] sons; // Delete the sons array
+
+	if(sons)
+		delete[] sons; // Delete the sons array
 	sons = nullptr;
-	delete parent;
-	parent = nullptr;
 }
 
 template<class T>
@@ -78,21 +76,19 @@ bool BTree<T>::BNode::isLeaf()
 template<class T>
 void BTree<T>::BNode::insertKey(T record)
 {
-	bool stop = false;
-	int rightPlace = 0;
-	for (int i = 0; i < numOfRecords && stop == false; i++)
+	int i;
+	for (i = 0; i < numOfRecords; i++)
 	{
 		if (records[i] > record)//found the right place to get this record in 
 		{
-			stop = true;
-			rightPlace = i;
 			for (int j = numOfRecords; j > i; j--)//get all the continue of the array one place earlier and crush the record we want to delete
 			{
 				records[j] = records[j-1];
 			}
+			break;
 		}
 	}
-	records[rightPlace] = record;
+	records[i] = record;
 	numOfRecords++;
 }
 
@@ -154,14 +150,14 @@ void BTree<T>::insert(T record)
 template<class T>
 void BTree<T>::clear(BNode* current)
 {
-	if (current)
+		if (current)
 	{
-		delete[] current->records;//deleting all records-directly
+		//delete[] current->records;//deleting all records-directly
 		for (int i = 0; i < current->numOfSons; i++)//delete sons
 		{
 			clear(current->sons[i]);
 		}
-		delete[] current->sons;
+		
 		delete current;
 		current = nullptr;
 	}
@@ -170,7 +166,7 @@ template<class T>
 void BTree<T>::inorder(BNode* current)
 {
 	int i;
-	if (current != nullptr)
+	if (current != nullptr && !current->isLeaf())
 	{
 		for (i = 0; i < current->numOfRecords; i++)
 		{
@@ -182,6 +178,9 @@ void BTree<T>::inorder(BNode* current)
 		if (!current->isLeaf())
 			inorder(current->sons[i]); //if isnt leaf: numOfSons = numOfRecord + 1 so we need to ran over this Node too.
 	}
+	//if it doesn't have sons - print it only once
+	else if (current->isLeaf())
+		current->printKeys();
 }
 
 template<class T>
@@ -219,18 +218,24 @@ void BTree<T>::split(BNode* fullNode)
 	//C. last m/2 => creates new node and send them to him. this new node always will be one place after the son fullNode. 
 
 	//B. get the middle value in full node to the parent:
+	if (fullNode->parent == nullptr)
+	{
+		fullNode->parent = new BNode(m);
+		fullNode->parent->sons[0] = fullNode;
+		fullNode->parent->numOfSons++;
+
+		root = fullNode->parent;
+	}
+
 	fullNode->parent->insertKey((fullNode->records)[m / 2]);//get him into the father 
-	fullNode->parent->numOfRecords++;
 	fullNode->numOfRecords--;
 
 	//C. fill the new node with appropriate values:
 	BNode* newNode = new BNode(m);	
 	newNode->parent = fullNode->parent;
-	for (i = ((fullNode->numOfRecords) / 2) + 1; i < fullNode->numOfRecords; i++)
+	for (i = (m / 2) + 1; i < m; i++)
 	{
 		newNode->insertKey((fullNode->records)[i]);
-		(fullNode->records)[i] = 0;
-		newNode->numOfRecords++;
 		fullNode->numOfRecords--;
 	}
 	//get newNode in his correct place in the sons array-> always the newNode will be one place after the fullNode:
@@ -243,16 +248,25 @@ void BTree<T>::split(BNode* fullNode)
 			placeOfFullNode = i;
 		}
 	}
-	for (i = placeOfFullNode + 1; i < numberOfSonsParent - 1; i++)//move all BNodes after fullNode one place forward.
+	for (i = numberOfSonsParent; i > placeOfFullNode + 1; i--)//move all BNodes after fullNode one place forward.
 	{
-		fullNode->parent->sons[i + 1] = fullNode->parent->sons[i];
+		fullNode->parent->sons[i] = fullNode->parent->sons[i-1];
 	}
-	fullNode->parent->sons[i + 1] = newNode;
+	fullNode->parent->sons[placeOfFullNode +1] = newNode;
 	fullNode->parent->numOfSons++;
+
+	if (!fullNode->isLeaf())
+	{
+		for (int i = (m / 2) + 1; i <= m; i++)
+			newNode->sons[i -((m/2)+1)] = fullNode->sons[i];
+
+		fullNode->numOfSons = (m / 2) + 1;
+		newNode->numOfSons = (m / 2) + 1;
+	}
 
 
 	//reqursive check for the father send.
-	if (fullNode->parent->numOfSons == m)
+	if (fullNode->parent->numOfSons > m)
 		split(fullNode->parent);
 }
 
