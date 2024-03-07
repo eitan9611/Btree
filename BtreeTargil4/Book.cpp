@@ -23,7 +23,7 @@ bool Book::borrowBook(int wantedCatalogNumber)
 
 bool Book::returnBook()
 {
-	if (available)
+	if (!available)
 	{
 		cout << "Error! The book " << catalogNumber << " is not borrowed!" << endl;
 		return false;
