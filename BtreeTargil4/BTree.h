@@ -30,7 +30,7 @@ private:
 	void inorder(BNode* current);
 	BNode* findAddNode(BNode* current, T record);
 	void split(BNode* current);
-	T* search(BNode* current, int key, int& counter);
+	T*  search(BNode* current, int key, int& counter);
 public:
 	BTree(int degree);
 	~BTree();
@@ -277,19 +277,28 @@ T* BTree<T>::search(BNode* current, int key, int& counter)
 {
 	int i;
 	counter++;
-	for(i = 0;  i< current->numOfRecords; i++)
+	if (current != nullptr)
 	{
-		if (key < (current->records[i]).getKey())
+		for (i = 0; i < current->numOfRecords; i++)
 		{
-			return search(current->sons[i],key,counter);
-		}
-		if (key == (current->records[i]).getKey())
-		{
-			return &(current->records[i]); ///// maybe need to be current->records
+			if (key < (current->records[i]).getKey())
+			{
+				return search(current->sons[i], key, counter);
+			}
+			if (key == (current->records[i]).getKey())
+			{
+				return &(current->records[i]); ///// maybe need to be current->records
+			}
 		}
 	}
+	else
+		return nullptr;
 	//if key is bigger from all the current record =>go to the right son
-	return search(current->sons[i],key,counter);
+	if (current->numOfSons != 0)
+	{
+		return search(current->sons[i], key, counter);
+	}
+	return nullptr;
 }
 
 template<class T>

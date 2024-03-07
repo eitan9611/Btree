@@ -17,13 +17,14 @@ bool Book::borrowBook(int wantedCatalogNumber)
 	else
 	{
 		cout << "Successfully found the book " << catalogNumber << " on shelf " << shelf << " and borrowed it" << endl;
+		available = false;
 		return true;
 	}
 }
 
 bool Book::returnBook()
 {
-	if (!available)
+	if (available)
 	{
 		cout << "Error! The book " << catalogNumber << " is not borrowed!" << endl;
 		return false;
@@ -31,6 +32,7 @@ bool Book::returnBook()
 	else
 	{
 		cout << "Successfully returned the book " << catalogNumber << " to shelf " << shelf << endl;
+		available = true;
 		return true;
 	}
 }
