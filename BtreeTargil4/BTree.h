@@ -255,11 +255,13 @@ void BTree<T>::split(BNode* fullNode)
 	fullNode->parent->sons[placeOfFullNode +1] = newNode;
 	fullNode->parent->numOfSons++;
 
-	if (!fullNode->isLeaf())
+	if (!fullNode->isLeaf())//
 	{
 		for (int i = (m / 2) + 1; i <= m; i++)
-			newNode->sons[i -((m/2)+1)] = fullNode->sons[i];
-
+		{
+			newNode->sons[i - ((m / 2) + 1)] = fullNode->sons[i];
+			newNode->sons[i - ((m / 2) + 1)]->parent = newNode;
+		}
 		fullNode->numOfSons = (m / 2) + 1;
 		newNode->numOfSons = (m / 2) + 1;
 	}
@@ -277,8 +279,8 @@ T* BTree<T>::search(BNode* current, int key, int& counter)
 {
 	int i;
 	counter++;
-	if (current != nullptr)
-	{
+	
+	
 		for (i = 0; i < current->numOfRecords; i++)
 		{
 			if (key < (current->records[i]).getKey())
@@ -290,9 +292,8 @@ T* BTree<T>::search(BNode* current, int key, int& counter)
 				return &(current->records[i]); ///// maybe need to be current->records
 			}
 		}
-	}
-	else
-		return nullptr;
+	
+	
 	//if key is bigger from all the current record =>go to the right son
 	if (current->numOfSons != 0)
 	{
